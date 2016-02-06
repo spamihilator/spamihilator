@@ -102,7 +102,7 @@ export default class Pop3Client {
    * Set a listener that will be called when the connection has been closed
    * @param listener the listener
    */
-  onClose(listener: (had_error: boolean) => void) {
+  onClose(listener: (hadError: boolean) => void) {
     this.socket.on("close", listener);
   }
 
@@ -141,7 +141,7 @@ export default class Pop3Client {
    * @param listener will be called when the log out was successful
    */
   logout(listener?: () => void) {
-    listener = listener || (() => {});
+    listener = listener || (() => { /* empty */ });
     this.sendLine("QUIT", listener);
   }
 
@@ -151,7 +151,7 @@ export default class Pop3Client {
    * @param listener will be called when the server has processed the command
    */
   noop(listener?: () => void) {
-    listener = listener || (() => { });
+    listener = listener || (() => { /* empty */ });
     this.sendLine("NOOP", listener);
   }
 

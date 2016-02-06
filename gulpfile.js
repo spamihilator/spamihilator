@@ -5,6 +5,8 @@ var jasmine = require("gulp-jasmine");
 var path = require("path");
 var sourcemaps = require("gulp-sourcemaps");
 var ts = require("gulp-typescript");
+var tslint = require("gulp-tslint");
+var tslintconfig = require("./tslint.json");
 var typedoc = require("gulp-typedoc");
 
 var paths = {
@@ -14,7 +16,8 @@ var paths = {
 };
 
 var tsProject = ts.createProject("tsconfig.json", {
-  sortOutput: true
+  sortOutput: true,
+  typescript: require("typescript")
 });
 
 /**
@@ -34,12 +37,28 @@ gulp.task("compile", function() {
 });
 
 /**
+ * Check code-style
+ */
+gulp.task("tslint", function() {
+  return gulp.src(paths.sources)
+    .pipe(tslint({
+      configuration: tslintconfig
+    }))
+    .pipe(tslint.report("verbose"));
+});
+
+/**
  * Compile sources and execute tests
  */
 gulp.task("test", ["compile"], function() {
   return gulp.src([paths.tests])
     .pipe(jasmine());
 });
+
+/**
+ * Run tests and other tasks (such as linting)
+ */
+gulp.task("check", ["tslint", "test"]);
 
 /**
  * Generate typedoc documentation
@@ -57,8 +76,8 @@ gulp.task("typedoc", function() {
 /**
  * Keep compiling sources and continuously run tests
  */
-gulp.task("watch", ["test"], function() {
-  return gulp.watch([paths.sources, paths.tests], ["test"]);
+gulp.task("watch", ["check"], function() {
+  return gulp.watch([paths.sources, paths.tests], ["check"]);
 });
 
 /**
@@ -71,4 +90,4 @@ gulp.task("clean", function(cb) {
 /**
  * Default task
  */
-gulp.task("default", ["test"]);
+gulp.task("default", ["check"]);
