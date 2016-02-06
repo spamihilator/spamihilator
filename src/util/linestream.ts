@@ -16,13 +16,13 @@ class LineStream extends stream.Transform {
     super(options);
   }
 
-  private trimCRLFRight(str: string) {
-    return str.replace(/[\r\n]+$/, "");
+  private normalize(str: string) {
+    return str.replace(/[\r\n]+$/, "") + "\n";
   }
 
   private pushLine() {
     if (this.line !== undefined) {
-      this.push(this.trimCRLFRight(this.line));
+      this.push(this.normalize(this.line));
       this.line = undefined;
     }
   }
@@ -58,7 +58,9 @@ class LineStream extends stream.Transform {
 
   _flush(callback: Function) {
     // emit rest of buffer contents
-    this.pushLine();
+    if (this.line !== undefined && this.line !== "") {
+      this.pushLine();
+    }
     if (callback) {
       callback();
     }

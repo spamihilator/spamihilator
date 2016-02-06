@@ -9,13 +9,15 @@ describe("LineStream", () => {
     linestream = new LineStream();
   });
 
-  function makeExpectTwoLines() {
+  function makeExpectTwoLines(first, second) {
+    first = first !== undefined ? first : "Hello\n";
+    second = second !== undefined ? second : "World\n";
     let n = 0;
     return (buf) => {
       if (n === 0) {
-        expect(buf.toString("ASCII")).toEqual("Hello");
+        expect(buf.toString("ASCII")).toBe(first);
       } else if (n === 1) {
-        expect(buf.toString("ASCII")).toEqual("World");
+        expect(buf.toString("ASCII")).toBe(second);
       } else {
         fail("Too many lines");
       }
@@ -32,8 +34,11 @@ describe("LineStream", () => {
   });
 
   it("should transform empty string", done => {
+    let n = 0;
     linestream.on("data", (buf) => {
-      fail("Received a line: " + buf.toString("ASCII"));
+      expect(n).toBe(0);
+      expect(buf.toString("ASCII")).toBe("\n");
+      ++n;
     });
     linestream.on("end", done);
     linestream.write("");
@@ -44,7 +49,7 @@ describe("LineStream", () => {
     let n = 0;
     linestream.on("data", buf => {
       expect(n).toBe(0);
-      expect(buf.toString("ASCII")).toEqual("Hello");
+      expect(buf.toString("ASCII")).toBe("Hello\n");
       ++n;
     });
     linestream.on("end", done);
@@ -82,6 +87,21 @@ describe("LineStream", () => {
     linestream.write("o\n");
     linestream.write("Wor");
     linestream.write("ld");
+    linestream.end();
+  });
+
+  it("should transform empty line", done => {
+    linestream.on("data", makeExpectTwoLines("\n", "hello\n"));
+    linestream.on("end", done);
+    linestream.write("\n");
+    linestream.write("hello\n");
+    linestream.end();
+  });
+
+  it("should transform empty line at the end", done => {
+    linestream.on("data", makeExpectTwoLines("hello\n", "\n"));
+    linestream.on("end", done);
+    linestream.write("hello\n\n");
     linestream.end();
   });
 });
