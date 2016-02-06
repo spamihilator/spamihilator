@@ -11,6 +11,7 @@ var typedoc = require("gulp-typedoc");
 
 var paths = {
   build: "build",
+  fixtures: "test/**/fixtures/**/*",
   sources: "src/**/*.ts",
   tests: "test/**/*.js"
 };
@@ -77,7 +78,7 @@ gulp.task("typedoc", function() {
  * Keep compiling sources and continuously run tests
  */
 gulp.task("watch", ["check"], function() {
-  return gulp.watch([paths.sources, paths.tests], ["check"]);
+  return gulp.watch([paths.fixtures, paths.sources, paths.tests], ["check"]);
 });
 
 /**
