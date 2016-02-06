@@ -3,12 +3,13 @@
 "use strict";
 
 import * as net from "net";
+import LineStream from "../../util/linestream";
 
 /**
  * A client for POP3 message boxes
  * @author Michel Kraemer
  */
-export default class Pop3Client {
+class Pop3Client {
   /**
    * A handler that should be called when a response from the server has
    * been received
@@ -28,15 +29,14 @@ export default class Pop3Client {
 
   /**
    * Handle response from the server and call the [current handler](#currenthandler)
-   * @param buf the response from the server
+   * @param line the response from the server
    */
-  private handleData(buf: Buffer | string) {
-    let str = buf.toString("ASCII");
-    if (str.substring(0, 3) !== "+OK") {
+  private handleLine(line: string) {
+    if (line.substring(0, 3) !== "+OK") {
       // call error handler
       this.currentHandler = undefined;
       if (this.errorHandler) {
-        this.errorHandler(str);
+        this.errorHandler(line);
       }
     } else if (this.currentHandler) {
       // call current handler
@@ -77,7 +77,10 @@ export default class Pop3Client {
    */
   connect(host: string, port: number, listener: () => void) {
     this.currentHandler = listener;
-    this.socket.on("data", (buf: Buffer | string) => this.handleData(buf));
+    let lineStream = new LineStream();
+    lineStream.on("data", (buf: Buffer | string) =>
+      this.handleLine(buf.toString("ASCII")));
+    this.socket.pipe(lineStream);
     this.socket.connect(port, host);
   }
 
@@ -165,3 +168,5 @@ export default class Pop3Client {
     this.sendLine("DELETE " + id, listener);
   }
 }
+
+export default Pop3Client;

@@ -6,7 +6,7 @@ import MessageHeaderFieldType from "./messageheaderfieldtype";
  * A field in a message header
  * @author Michel Kraemer
  */
-export default class MessageHeaderField {
+class MessageHeaderField {
   private _name: string;
   private _body: string;
   private _type: MessageHeaderFieldType;
@@ -69,3 +69,5 @@ export default class MessageHeaderField {
     return this._type;
   }
 }
+
+export default MessageHeaderField;

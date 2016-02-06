@@ -1,6 +1,6 @@
 "use strict";
 
-let MessageHeaderField = require("../../build/message/messageheaderfield").MessageHeaderField;
+let MessageHeaderField = require("../../build/message/messageheaderfield").default;
 let MessageHeaderFieldType = require("../../build/message/messageheaderfieldtype").default;
 
 describe("MessageHeaderField", () => {

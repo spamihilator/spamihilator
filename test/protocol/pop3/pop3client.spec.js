@@ -1,6 +1,6 @@
 "use strict";
 
-let Pop3Client = require("../../../build/protocol/pop3/pop3client").Pop3Client;
+let Pop3Client = require("../../../build/protocol/pop3/pop3client").default;
 let MockServer = require("../../mockserver");
 
 describe("Pop3Client", () => {
@@ -18,7 +18,7 @@ describe("Pop3Client", () => {
     }
   });
 
-  it("should connect", (done) => {
+  it("should connect", done => {
     mockserver.create("test/protocol/pop3/fixtures/connect.log", address => {
       client.connect("localhost", address.port, () => {
         client.logout(done);
@@ -26,7 +26,7 @@ describe("Pop3Client", () => {
     });
   });
 
-  it("should login", (done) => {
+  it("should login", done => {
     mockserver.create("test/protocol/pop3/fixtures/login.log", address => {
       client.connect("localhost", address.port, () => {
         client.login("username", "password", () => {
