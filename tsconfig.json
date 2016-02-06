@@ -4,5 +4,11 @@
     "noImplicitAny": true,
     "removeComments": true,
     "target": "ES6"
-  }
+  },
+  "exclude": [
+    "build",
+    "node_modules",
+    "typings"
+  ],
+  "compileOnSave": false
 }
