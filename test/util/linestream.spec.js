@@ -10,24 +10,24 @@ describe("LineStream", () => {
   });
 
   function makeExpectTwoLines(first, second) {
-    first = first !== undefined ? first : "Hello\n";
-    second = second !== undefined ? second : "World\n";
+    first = first !== undefined ? first : "Hello\r\n";
+    second = second !== undefined ? second : "World\r\n";
     let n = 0;
-    return (buf) => {
+    return line => {
       if (n === 0) {
-        expect(buf.toString("ASCII")).toBe(first);
+        expect(line).toBe(first);
       } else if (n === 1) {
-        expect(buf.toString("ASCII")).toBe(second);
+        expect(line).toBe(second);
       } else {
-        fail("Too many lines");
+        fail("Extra line: '" + line + "'");
       }
       ++n;
     };
   }
 
   it("should transform empty stream", done => {
-    linestream.on("data", (buf) => {
-      fail("Received a line: " + buf.toString("ASCII"));
+    linestream.on("data", line => {
+      fail("Received a line: " + line);
     });
     linestream.on("end", done);
     linestream.end();
@@ -35,9 +35,9 @@ describe("LineStream", () => {
 
   it("should transform empty string", done => {
     let n = 0;
-    linestream.on("data", (buf) => {
+    linestream.on("data", line => {
       expect(n).toBe(0);
-      expect(buf.toString("ASCII")).toBe("\n");
+      expect(line).toBe("");
       ++n;
     });
     linestream.on("end", done);
@@ -47,9 +47,9 @@ describe("LineStream", () => {
 
   it("should transform a string without line-break", done => {
     let n = 0;
-    linestream.on("data", buf => {
+    linestream.on("data", line => {
       expect(n).toBe(0);
-      expect(buf.toString("ASCII")).toBe("Hello\n");
+      expect(line).toBe("Hello");
       ++n;
     });
     linestream.on("end", done);
@@ -60,48 +60,48 @@ describe("LineStream", () => {
   it("should transform two lines", done => {
     linestream.on("data", makeExpectTwoLines());
     linestream.on("end", done);
-    linestream.write("Hello\nWorld\n");
+    linestream.write("Hello\r\nWorld\r\n");
     linestream.end();
   });
 
   it("should transform two separate lines", done => {
     linestream.on("data", makeExpectTwoLines());
     linestream.on("end", done);
-    linestream.write("Hello\n");
-    linestream.write("World\n");
+    linestream.write("Hello\r\n");
+    linestream.write("World\r\n");
     linestream.end();
   });
 
   it("should transform two lines without final line-break", done => {
-    linestream.on("data", makeExpectTwoLines());
+    linestream.on("data", makeExpectTwoLines(undefined, "World"));
     linestream.on("end", done);
-    linestream.write("Hello\n");
+    linestream.write("Hello\r\n");
     linestream.write("World");
     linestream.end();
   });
 
   it("should transform four chunks", done => {
-    linestream.on("data", makeExpectTwoLines());
+    linestream.on("data", makeExpectTwoLines(undefined, "World"));
     linestream.on("end", done);
     linestream.write("Hell");
-    linestream.write("o\n");
+    linestream.write("o\r\n");
     linestream.write("Wor");
     linestream.write("ld");
     linestream.end();
   });
 
   it("should transform empty line", done => {
-    linestream.on("data", makeExpectTwoLines("\n", "hello\n"));
+    linestream.on("data", makeExpectTwoLines("\r\n", "hello\r\n"));
     linestream.on("end", done);
-    linestream.write("\n");
-    linestream.write("hello\n");
+    linestream.write("\r\n");
+    linestream.write("hello\r\n");
     linestream.end();
   });
 
   it("should transform empty line at the end", done => {
-    linestream.on("data", makeExpectTwoLines("hello\n", "\n"));
+    linestream.on("data", makeExpectTwoLines("hello\r\n", "\r\n"));
     linestream.on("end", done);
-    linestream.write("hello\n\n");
+    linestream.write("hello\r\n\r\n");
     linestream.end();
   });
 });

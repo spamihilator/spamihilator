@@ -65,7 +65,7 @@ class Pop3Client {
    * string successfully
    */
   private sendLine(str: string, listener: () => void) {
-    this.sendString(str + "\n", listener);
+    this.sendString(str + "\r\n", listener);
   }
 
   /**

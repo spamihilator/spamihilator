@@ -16,6 +16,9 @@ describe("Pop3Client", () => {
     if (client) {
       client.destroy();
     }
+    if (mockserver) {
+      mockserver.close();
+    }
   });
 
   it("should connect", done => {

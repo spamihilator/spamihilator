@@ -25,7 +25,7 @@ class MockServer {
       while (true) {
         let str = lines[0];
         if (str.match(/^S: /)) {
-          socket.write(str.substring(3) + "\n");
+          socket.write(str.substring(3) + "\r\n");
           lines.shift();
         } else {
           break;
@@ -33,12 +33,12 @@ class MockServer {
       }
     }
 
-    let server = net.createServer((socket) => {
+    this.server = net.createServer((socket) => {
       // receive data from the client and respond
-      socket.on("data", (buf) => {
+      socket.on("data", buf => {
         let str = lines.shift();
         if (str.match(/^C: /)) {
-          expect(buf.toString("ASCII")).toBe(str.substring(3) + "\n");
+          expect(buf.toString("ASCII")).toBe(str.substring(3) + "\r\n");
           sendServerMessage(socket);
         }
       });
@@ -46,9 +46,13 @@ class MockServer {
     });
 
     // listen to incoming connections
-    server.listen(() => {
-      listener(server.address());
+    this.server.listen(() => {
+      listener(this.server.address());
     });
+  }
+
+  close() {
+    this.server.close();
   }
 }
 
