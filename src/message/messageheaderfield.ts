@@ -22,6 +22,8 @@ class MessageHeaderField {
 
     let colon = field.indexOf(":");
     if (colon < 0) {
+      this._name = field;
+      this._type = MessageHeaderFieldType.DEFAULT;
       return;
     }
 

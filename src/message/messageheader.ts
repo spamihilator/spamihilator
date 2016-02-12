@@ -1,5 +1,7 @@
 /// <reference path="../../node_modules/immutable/dist/immutable.d.ts" />
 
+"use strict";
+
 import * as Immutable from "immutable";
 import MessageHeaderField from "./messageheaderfield";
 import MessageHeaderFieldType from "./messageheaderfieldtype";
@@ -12,20 +14,22 @@ class MessageHeader {
   /**
    * A list of all header fields
    */
-  private fields: Immutable.List<MessageHeaderField>;
+  private _fields: Immutable.List<MessageHeaderField>;
 
   /**
    * A list of well-known header fields
    */
-  private knownFields: Immutable.Map<MessageHeaderFieldType, MessageHeaderField>;
+  private _knownFields: Immutable.Map<MessageHeaderFieldType, MessageHeaderField>;
 
   /**
    * Construct the message header
    * @param fields the header fields
    */
   constructor(fields: string[]) {
-    this.fields = Immutable.List<MessageHeaderField>(
+    this._fields = Immutable.List<MessageHeaderField>(
       fields.map(f => new MessageHeaderField(f)));
+    this._knownFields = Immutable.Map<MessageHeaderFieldType, MessageHeaderField>(
+      this._fields.map(f => [f.type, f]));
   }
 
   /**
@@ -34,7 +38,7 @@ class MessageHeader {
    * @return the header field body
    */
   getField(name: string): string {
-    let r = this.fields.find(f => f.name === name);
+    let r = this._fields.find(f => f.name === name);
     return r && r.body;
   }
 
@@ -44,15 +48,15 @@ class MessageHeader {
    * @return the header field body
    */
   getFieldByType(type: MessageHeaderFieldType): string {
-    let r = this.knownFields.get(type);
+    let r = this._knownFields.get(type);
     return r && r.body;
   }
 
   /**
    * @return all header fields
    */
-  getFields(): Immutable.List<MessageHeaderField> {
-    return this.fields.toList();
+  get fields(): Immutable.List<MessageHeaderField> {
+    return this._fields;
   }
 }
 

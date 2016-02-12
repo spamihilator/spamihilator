@@ -39,11 +39,11 @@ describe("MessageHeaderField", () => {
     expect(field.type).toBe(MessageHeaderFieldType.DEFAULT);
   });
 
-  it("should not parse invalid field", () => {
+  it("should parse invalid field", () => {
     let field = new MessageHeaderField("Subject");
-    expect(field.name).toBeUndefined();
+    expect(field.name).toBe("Subject");
     expect(field.body).toBeUndefined();
-    expect(field.type).toBeUndefined();
+    expect(field.type).toBe(MessageHeaderFieldType.DEFAULT);
   });
 
   it("should not parse empty field", () => {
