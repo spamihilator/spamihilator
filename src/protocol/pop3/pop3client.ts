@@ -11,10 +11,15 @@ import LineStream from "../../util/linestream";
  */
 class Pop3Client {
   /**
+   * True if the current request expects a multi-line response
+   */
+  private currentMultiline: boolean = false;
+
+  /**
    * A handler that should be called when a response from the server has
    * been received
    */
-  private currentHandler: () => void;
+  private currentHandler: (line?: string) => void;
 
   /**
    * Will be called when an error has occurred. This is either a socket
@@ -32,17 +37,28 @@ class Pop3Client {
    * @param line the response from the server
    */
   private handleLine(line: string) {
-    if (line.substring(0, 3) !== "+OK") {
-      // call error handler
-      this.currentHandler = undefined;
-      if (this.errorHandler) {
-        this.errorHandler(line);
+    let handler = this.currentHandler;
+    if (this.currentMultiline) {
+      if (line === ".\r\n") {
+        // end of multi-line response. reset flag and finally call handler.
+        this.currentMultiline = false;
+        this.currentHandler = undefined;
+        handler();
+      } else {
+        handler(line);
       }
-    } else if (this.currentHandler) {
-      // call current handler
-      let handler = this.currentHandler;
-      this.currentHandler = undefined;
-      handler();
+    } else {
+      if (line.substring(0, 3) !== "+OK") {
+        // call error handler
+        this.currentHandler = undefined;
+        if (this.errorHandler) {
+          this.errorHandler(line);
+        }
+      } else {
+        // call current handler
+        this.currentHandler = undefined;
+        handler();
+      }
     }
   }
 
@@ -166,6 +182,24 @@ class Pop3Client {
    */
   delete(id: number, listener: () => void) {
     this.sendLine("DELETE " + id, listener);
+  }
+
+  /**
+   * List the IDs of all messages in the mailbox
+   * @param listener will be called when the list has been retrieved
+   */
+  list(listener: (ids: number[]) => void) {
+    this.sendLine("LIST", () => {
+      this.currentMultiline = true;
+      let result: number[] = [];
+      this.currentHandler = (line?) => {
+        if (line !== undefined) {
+          result.push(parseInt(line.trim(), 10));
+        } else {
+          listener(result);
+        }
+      };
+    });
   }
 }
 

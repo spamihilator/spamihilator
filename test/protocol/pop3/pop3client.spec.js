@@ -38,4 +38,17 @@ describe("Pop3Client", () => {
       });
     });
   });
+
+  it("should list message ids", done => {
+    mockserver.create("test/protocol/pop3/fixtures/list.log", address => {
+      client.connect("localhost", address.port, () => {
+        client.login("username", "password", () => {
+          client.list((ids) => {
+            expect(ids).toEqual([1, 2, 3]);
+            client.logout(done);
+          });
+        });
+      });
+    });
+  });
 });

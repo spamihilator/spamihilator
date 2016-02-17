@@ -1,0 +1,13 @@
+S: +OK Hello
+C: USER username
+S: +OK
+C: PASS password
+S: +OK
+C: LIST
+S: +OK
+S: 1
+S: 2
+S: 3
+S: .
+C: QUIT
+S: +OK Goodbye!
