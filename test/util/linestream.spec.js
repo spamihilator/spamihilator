@@ -9,7 +9,7 @@ describe("LineStream", () => {
     linestream = new LineStream();
   });
 
-  function makeExpectTwoLines(first, second) {
+  function makeExpectLines(first, second, third) {
     first = first !== undefined ? first : "Hello\r\n";
     second = second !== undefined ? second : "World\r\n";
     let n = 0;
@@ -19,7 +19,11 @@ describe("LineStream", () => {
       } else if (n === 1) {
         expect(line).toBe(second);
       } else {
-        fail("Extra line: '" + line + "'");
+        if (third !== undefined && n === 2) {
+          expect(line).toBe(third);
+        } else {
+          fail("Extra line: '" + line + "'");
+        }
       }
       ++n;
     };
@@ -58,14 +62,21 @@ describe("LineStream", () => {
   });
 
   it("should transform two lines", done => {
-    linestream.on("data", makeExpectTwoLines());
+    linestream.on("data", makeExpectLines());
     linestream.on("end", done);
     linestream.write("Hello\r\nWorld\r\n");
     linestream.end();
   });
 
+  it("should transform three lines", done => {
+    linestream.on("data", makeExpectLines(undefined, undefined, "Foo\r\n"));
+    linestream.on("end", done);
+    linestream.write("Hello\r\nWorld\r\nFoo\r\n");
+    linestream.end();
+  });
+
   it("should transform two separate lines", done => {
-    linestream.on("data", makeExpectTwoLines());
+    linestream.on("data", makeExpectLines());
     linestream.on("end", done);
     linestream.write("Hello\r\n");
     linestream.write("World\r\n");
@@ -73,7 +84,7 @@ describe("LineStream", () => {
   });
 
   it("should transform two lines without final line-break", done => {
-    linestream.on("data", makeExpectTwoLines(undefined, "World"));
+    linestream.on("data", makeExpectLines(undefined, "World"));
     linestream.on("end", done);
     linestream.write("Hello\r\n");
     linestream.write("World");
@@ -81,7 +92,7 @@ describe("LineStream", () => {
   });
 
   it("should transform four chunks", done => {
-    linestream.on("data", makeExpectTwoLines(undefined, "World"));
+    linestream.on("data", makeExpectLines(undefined, "World"));
     linestream.on("end", done);
     linestream.write("Hell");
     linestream.write("o\r\n");
@@ -91,7 +102,7 @@ describe("LineStream", () => {
   });
 
   it("should transform empty line", done => {
-    linestream.on("data", makeExpectTwoLines("\r\n", "hello\r\n"));
+    linestream.on("data", makeExpectLines("\r\n", "hello\r\n"));
     linestream.on("end", done);
     linestream.write("\r\n");
     linestream.write("hello\r\n");
@@ -99,7 +110,7 @@ describe("LineStream", () => {
   });
 
   it("should transform empty line at the end", done => {
-    linestream.on("data", makeExpectTwoLines("hello\r\n", "\r\n"));
+    linestream.on("data", makeExpectLines("hello\r\n", "\r\n"));
     linestream.on("end", done);
     linestream.write("hello\r\n\r\n");
     linestream.end();

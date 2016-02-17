@@ -40,13 +40,13 @@ class LineStream extends stream.Transform {
         break;
       } else {
         // line end found. emit line.
-        let s = str.substring(pos, pos + n + 2);
+        let s = str.substring(pos, n + 2);
         if (this.line === undefined) {
           this.line = s;
         } else {
           this.line += s;
         }
-        pos += n + 2;
+        pos = n + 2;
         this.pushLine();
       }
     }
