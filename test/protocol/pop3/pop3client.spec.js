@@ -43,8 +43,49 @@ describe("Pop3Client", () => {
     mockserver.create("test/protocol/pop3/fixtures/list.log", address => {
       client.connect("localhost", address.port, () => {
         client.login("username", "password", () => {
-          client.list((ids) => {
-            expect(ids).toEqual([1, 2, 3]);
+          client.list(ids => {
+            expect(ids).toEqual([[1, 100], [2, 200], [3, 123]]);
+            client.logout(done);
+          });
+        });
+      });
+    });
+  });
+
+  it("should list a single message by id", done => {
+    mockserver.create("test/protocol/pop3/fixtures/list2.log", address => {
+      client.connect("localhost", address.port, () => {
+        client.login("username", "password", () => {
+          client.list(ids => {
+            expect(ids).toEqual([[2, 567]]);
+            client.logout(done);
+          }, 2);
+        });
+      });
+    });
+  });
+
+  it("should get information about mailbox", done => {
+    mockserver.create("test/protocol/pop3/fixtures/stat.log", address => {
+      client.connect("localhost", address.port, () => {
+        client.login("username", "password", () => {
+          client.stat((messageCount, mailboxSize) => {
+            expect(messageCount).toBe(12);
+            expect(mailboxSize).toBe(345);
+            client.logout(done);
+          });
+        });
+      });
+    });
+  });
+
+  it("should retrieve a message", done => {
+    mockserver.create("test/protocol/pop3/fixtures/retr.log", address => {
+      client.connect("localhost", address.port, () => {
+        client.login("username", "password", () => {
+          client.retr(1, msg => {
+            expect(msg.header.getField("Subject")).toBe("Hi!");
+            expect(msg.root.body.toString()).toBe("Hello World\r\n");
             client.logout(done);
           });
         });

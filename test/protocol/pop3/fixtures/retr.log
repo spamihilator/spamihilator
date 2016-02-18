@@ -3,11 +3,11 @@ C: USER username
 S: +OK
 C: PASS password
 S: +OK
-C: LIST
-S: +OK
-S: 1 100
-S: 2 200
-S: 3 123
+C: RETR 1
+S: +OK 29
+S: Subject: Hi!
+S:
+S: Hello World
 S: .
 C: QUIT
 S: +OK Goodbye!

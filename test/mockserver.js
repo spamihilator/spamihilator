@@ -24,7 +24,7 @@ class MockServer {
     function sendServerMessage(socket) {
       while (true) {
         let str = lines[0];
-        if (str.match(/^S: /)) {
+        if (str.match(/^S:/)) {
           socket.write(str.substring(3) + "\r\n");
           lines.shift();
         } else {
@@ -37,7 +37,7 @@ class MockServer {
       // receive data from the client and respond
       socket.on("data", buf => {
         let str = lines.shift();
-        if (str.match(/^C: /)) {
+        if (str.match(/^C:/)) {
           expect(buf.toString("ASCII")).toBe(str.substring(3) + "\r\n");
           sendServerMessage(socket);
         }

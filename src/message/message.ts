@@ -1,6 +1,7 @@
 "use strict";
 
 import MessageNode from "./messagenode";
+import MessageHeader from "./messageheader";
 
 /**
  * Represents a MIME message
@@ -21,7 +22,14 @@ class Message {
    * @return the message's root node
    */
   get root(): MessageNode {
-    return this.root;
+    return this._root;
+  }
+
+  /**
+   * @return the message's header
+   */
+  get header(): MessageHeader {
+    return this._root && this._root.header;
   }
 }
 

@@ -3,11 +3,7 @@ C: USER username
 S: +OK
 C: PASS password
 S: +OK
-C: LIST
-S: +OK
-S: 1 100
-S: 2 200
-S: 3 123
-S: .
+C: LIST 2
+S: +OK 2 567
 C: QUIT
 S: +OK Goodbye!
