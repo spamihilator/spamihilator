@@ -4,6 +4,7 @@ let Pop3Client = require("../../../build/protocol/pop3/pop3client").default;
 let MockServer = require("../../mockserver");
 
 describe("Pop3Client", () => {
+  const FIXTURE_PATH = "test/protocol/pop3/fixtures/client/";
   let client;
   let mockserver;
 
@@ -22,7 +23,7 @@ describe("Pop3Client", () => {
   });
 
   it("should connect", done => {
-    mockserver.create("test/protocol/pop3/fixtures/connect.log", address => {
+    mockserver.create(FIXTURE_PATH + "connect.log", address => {
       client.connect("localhost", address.port, () => {
         client.logout(done);
       });
@@ -30,7 +31,7 @@ describe("Pop3Client", () => {
   });
 
   it("should login", done => {
-    mockserver.create("test/protocol/pop3/fixtures/login.log", address => {
+    mockserver.create(FIXTURE_PATH + "login.log", address => {
       client.connect("localhost", address.port, () => {
         client.login("username", "password", () => {
           client.logout(done);
@@ -40,7 +41,7 @@ describe("Pop3Client", () => {
   });
 
   it("should list message ids", done => {
-    mockserver.create("test/protocol/pop3/fixtures/list.log", address => {
+    mockserver.create(FIXTURE_PATH + "list.log", address => {
       client.connect("localhost", address.port, () => {
         client.login("username", "password", () => {
           client.list(ids => {
@@ -53,7 +54,7 @@ describe("Pop3Client", () => {
   });
 
   it("should list a single message by id", done => {
-    mockserver.create("test/protocol/pop3/fixtures/list2.log", address => {
+    mockserver.create(FIXTURE_PATH + "list2.log", address => {
       client.connect("localhost", address.port, () => {
         client.login("username", "password", () => {
           client.list(ids => {
@@ -66,7 +67,7 @@ describe("Pop3Client", () => {
   });
 
   it("should get information about mailbox", done => {
-    mockserver.create("test/protocol/pop3/fixtures/stat.log", address => {
+    mockserver.create(FIXTURE_PATH + "stat.log", address => {
       client.connect("localhost", address.port, () => {
         client.login("username", "password", () => {
           client.stat((messageCount, mailboxSize) => {
@@ -80,7 +81,7 @@ describe("Pop3Client", () => {
   });
 
   it("should retrieve a message", done => {
-    mockserver.create("test/protocol/pop3/fixtures/retr.log", address => {
+    mockserver.create(FIXTURE_PATH + "retr.log", address => {
       client.connect("localhost", address.port, () => {
         client.login("username", "password", () => {
           client.retr(1, msg => {
