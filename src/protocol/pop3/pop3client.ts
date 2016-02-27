@@ -1,16 +1,14 @@
-/// <reference path="../../../typings/main/ambient/node/node.d.ts" />
-
 "use strict";
 
-import * as net from "net";
 import LineStream from "../../util/linestream";
 import Message from "../../message/message";
+import Pop3Protocol from "./pop3protocol";
 
 /**
  * A client for POP3 message boxes
  * @author Michel Kraemer
  */
-class Pop3Client {
+class Pop3Client extends Pop3Protocol {
   /**
    * True if the current request expects a multi-line response
    */
@@ -27,11 +25,6 @@ class Pop3Client {
    * error or an error returned by the server.
    */
   private errorHandler: (err: any) => void;
-
-  /**
-   * The connection to the server
-   */
-  private socket: net.Socket = new net.Socket();
 
   /**
    * Handle response from the server and call the [current handler](#currenthandler)
@@ -102,46 +95,13 @@ class Pop3Client {
   }
 
   /**
-   * Destroy the connection to the server immediately. Should only be called
-   * on error. Otherwise the [end method](#end) should be used.
-   */
-  destroy() {
-    this.socket.destroy();
-  }
-
-  /**
-   * Gracefully shutdown the connection to the server without logging out.
-   * If you want to log out before closing the connection call the
-   * [logout method](#logout) first.
-   */
-  end() {
-    this.socket.end();
-  }
-
-  /**
-   * Set a listener that will be called when the connection has been closed
-   * @param listener the listener
-   */
-  onClose(listener: (hadError: boolean) => void) {
-    this.socket.on("close", listener);
-  }
-
-  /**
    * Set a listener that will be called when an error has occurred. This can
    * either be a socket error or an error returned by the server.
    * @param listener the listener
    */
   onError(listener: (err: any) => void) {
     this.errorHandler = listener;
-    this.socket.on("error", listener);
-  }
-
-  /**
-   * Set a listener that will be called when the connection has timed out
-   * @param listener the listener
-   */
-  onTimeout(listener: () => void) {
-    this.socket.on("timeout", listener);
+    super.onError(listener);
   }
 
   /**

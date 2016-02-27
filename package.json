@@ -4,8 +4,8 @@
   "description": "Spamihilator - The popular free anti-spam filter",
   "scripts": {
     "install": "node node_modules/typings/dist/bin/typings.js install",
-    "test": "node --harmony_destructuring node_modules/gulp/bin/gulp check",
-    "watch": "node --harmony_destructuring node_modules/gulp/bin/gulp watch"
+    "test": "node --harmony_destructuring --harmony_rest_parameters node_modules/gulp/bin/gulp check",
+    "watch": "node --harmony_destructuring --harmony_rest_parameters node_modules/gulp/bin/gulp watch"
   },
   "repository": {
     "type": "git",
