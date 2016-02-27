@@ -1,4 +1,4 @@
-# Spamihilator 2.0
+# Spamihilator 2.0 [![Build Status](https://travis-ci.org/spamihilator/spamihilator.svg?branch=master)](https://travis-ci.org/spamihilator/spamihilator)
 
 An attempt to reimplement [Spamihilator](http://www.spamihilator.com)
 in Node.js.
