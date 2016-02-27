@@ -4,7 +4,7 @@
 
 import * as net from "net";
 import LineStream from "../../util/linestream";
-import Message from "../../message/Message";
+import Message from "../../message/message";
 
 /**
  * A client for POP3 message boxes
